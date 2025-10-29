@@ -32,10 +32,10 @@ export const FirstComponent = ({ onEarthquakeAdded, className }) => {
 
     try {
       const response = await fetch("https://mi-backend-publico/api/earthquakes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
 
 
       if (response.ok) {
@@ -57,7 +57,7 @@ export const FirstComponent = ({ onEarthquakeAdded, className }) => {
           Month: "",
           tsunami: "",
         });
-
+        
         if (onEarthquakeAdded) onEarthquakeAdded(updatedData);
       } else {
         setStatus("❌ Error al guardar en el CSV.");
@@ -99,9 +99,10 @@ export const FirstComponent = ({ onEarthquakeAdded, className }) => {
       </form>
 
       {status && (
-        <p className={`status-message ${status.includes("✅") ? "status-success" :
-            status.includes("❌") ? "status-error" : "status-warning"
-          }`}>
+        <p className={`status-message ${
+          status.includes("✅") ? "status-success" :
+          status.includes("❌") ? "status-error" : "status-warning"
+        }`}>
           {status}
         </p>
       )}

@@ -72,8 +72,8 @@ export default function App() {
         <h2 className="buttons-title">🔹 Ver Componentes</h2>
         <div className="buttons-container">
           {["CsvChart", "FirstComponent", "FourComponent", "SecondComponent", "ThreeComponent"].map((comp) => (
-            <button 
-              key={comp} 
+            <button
+              key={comp}
               className="nav-button"
               onClick={() => setVisibleComponent(comp)}
             >
