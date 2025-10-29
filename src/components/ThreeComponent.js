@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import Papa from "papaparse";
+import { Line } from "react-chartjs-2";
+import { Chart as ChartJS } from "chart.js/auto";
+import "../App.css";
 
-export const ThreeComponent = () => {
+export const ThreeComponent = ({ className }) => {
   const [data, setData] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState("");
@@ -16,7 +20,6 @@ export const ThreeComponent = () => {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [message, setMessage] = useState("");
 
-  // Cargar datos
   const loadData = async () => {
     try {
       const res = await fetch("http://localhost:3001/events");
@@ -38,7 +41,6 @@ export const ThreeComponent = () => {
 
   useEffect(() => { loadData(); }, []);
 
-  // Filtrar por año y mes
   useEffect(() => {
     let filteredData = [...data];
     if (selectedYear) filteredData = filteredData.filter(d => d.Year === Number(selectedYear));
@@ -74,34 +76,25 @@ export const ThreeComponent = () => {
   };
 
   return (
-    <div style={{
-      padding:"2rem",
-      maxWidth:"600px",
-      margin:"2rem auto",
-      background:"linear-gradient(135deg, #1e1f26, #2a2d3e)",
-      borderRadius:"15px",
-      color:"#fff",
-      fontFamily:"'Poppins', sans-serif",
-      boxShadow:"0 4px 20px rgba(0,0,0,0.3)"
-    }}>
-      <h2 style={{ textAlign:"center", color:"#4dd0e1", marginBottom:"1rem" }}>Editar Registro de Terremotos</h2>
+    <div className={`component-wrapper dark-gradient-wrapper ${className}`} style={{ maxWidth: "600px" }}>
+      <h2 className="component-title">Editar Registro de Terremotos</h2>
 
-      <div style={{ display:"flex", gap:"1rem", justifyContent:"center", marginBottom:"1rem", flexWrap:"wrap" }}>
-        <div>
-          <label>Año: </label>
-          <select value={selectedYear} onChange={e=>setSelectedYear(e.target.value)} style={{ padding:"0.4rem", borderRadius:"5px", border:"none", outline:"none" }}>
+      <div className="filters-container">
+        <div className="filter-group">
+          <label className="filter-label">Año: </label>
+          <select value={selectedYear} onChange={e=>setSelectedYear(e.target.value)} className="filter-select">
             {years.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
         </div>
-        <div>
-          <label>Mes: </label>
-          <select value={selectedMonth} onChange={e=>setSelectedMonth(e.target.value)} style={{ padding:"0.4rem", borderRadius:"5px", border:"none", outline:"none" }}>
+        <div className="filter-group">
+          <label className="filter-label">Mes: </label>
+          <select value={selectedMonth} onChange={e=>setSelectedMonth(e.target.value)} className="filter-select">
             {months.map(m => <option key={m.value} value={m.value}>{m.name}</option>)}
           </select>
         </div>
       </div>
 
-      <select onChange={handleSelect} value={selectedIndex} style={{ width:"100%", padding:"0.5rem", borderRadius:"6px", marginBottom:"1rem" }}>
+      <select onChange={handleSelect} value={selectedIndex} className="record-select">
         <option value="">-- Selecciona un registro --</option>
         {filtered.map((r,i)=>(
           <option key={i} value={i}>Evento {i+1} - Magnitud: {r.magnitude}, Profundidad: {r.depth}km</option>
@@ -109,36 +102,20 @@ export const ThreeComponent = () => {
       </select>
 
       {selectedIndex !== "" && (
-        <form onSubmit={handleUpdate} style={{ display:"flex", flexDirection:"column", gap:"10px" }}>
-          <input name="magnitude" type="number" step="0.1" value={form.magnitude || ""} onChange={handleChange} placeholder="Magnitud" style={inputStyle}/>
-          <input name="depth" type="number" step="0.1" value={form.depth || ""} onChange={handleChange} placeholder="Profundidad" style={inputStyle}/>
-          <input name="latitude" type="number" step="0.0001" value={form.latitude || ""} onChange={handleChange} placeholder="Latitud" style={inputStyle}/>
-          <input name="longitude" type="number" step="0.0001" value={form.longitude || ""} onChange={handleChange} placeholder="Longitud" style={inputStyle}/>
-          <input name="tsunami" type="number" value={form.tsunami || ""} onChange={handleChange} placeholder="Tsunami (0 o 1)" style={inputStyle}/>
-          <button type="submit" style={buttonStyle}>Actualizar</button>
+        <form onSubmit={handleUpdate} className="form-grid">
+          <input name="magnitude" type="number" step="0.1" value={form.magnitude || ""} onChange={handleChange} placeholder="Magnitud" className="form-input"/>
+          <input name="depth" type="number" step="0.1" value={form.depth || ""} onChange={handleChange} placeholder="Profundidad" className="form-input"/>
+          <input name="latitude" type="number" step="0.0001" value={form.latitude || ""} onChange={handleChange} placeholder="Latitud" className="form-input"/>
+          <input name="longitude" type="number" step="0.0001" value={form.longitude || ""} onChange={handleChange} placeholder="Longitud" className="form-input"/>
+          <input name="tsunami" type="number" value={form.tsunami || ""} onChange={handleChange} placeholder="Tsunami (0 o 1)" className="form-input"/>
+          <button type="submit" className="update-button">Actualizar</button>
         </form>
       )}
 
-      {message && <p style={{ marginTop:"1rem", textAlign:"center", color:"#4dd0e1" }}>{message}</p>}
+      {message && <p className={`status-message ${
+        message.includes("✅") ? "status-success" :
+        message.includes("❌") ? "status-error" : "status-warning"
+      }`}>{message}</p>}
     </div>
   );
-};
-
-const inputStyle = {
-  padding:"0.5rem",
-  borderRadius:"6px",
-  border:"none",
-  outline:"none",
-  width:"100%"
-};
-
-const buttonStyle = {
-  padding:"0.6rem",
-  borderRadius:"6px",
-  border:"none",
-  background:"#4dd0e1",
-  color:"#1e1f26",
-  fontWeight:"bold",
-  cursor:"pointer",
-  marginTop:"0.5rem"
 };

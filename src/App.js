@@ -27,25 +27,18 @@ export default function App() {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ color: "#d9534f" }}>🌋 Panel de Datos Sísmicos</h1>
+    <div className="app-container">
+      <h1 className="app-title">🌋 Panel de Datos Sísmicos</h1>
 
-      {/* Tabla explicativa estilizada */}
-      <section style={{ marginBottom: "30px" }}>
-        <h2 style={{ color: "#0275d8" }}>📊 Significado de los Campos Sísmicos</h2>
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            textAlign: "left",
-            boxShadow: "0 0 10px rgba(0,0,0,0.1)"
-          }}
-        >
-          <thead style={{ backgroundColor: "#f7f7f7" }}>
+      {/* Tabla explicativa */}
+      <section className="explanation-section">
+        <h2 className="explanation-title">📊 Significado de los Campos Sísmicos</h2>
+        <table className="explanation-table">
+          <thead>
             <tr>
-              <th style={{ border: "1px solid #ddd", padding: "8px" }}>Valor</th>
-              <th style={{ border: "1px solid #ddd", padding: "8px" }}>Traducción / Significado</th>
-              <th style={{ border: "1px solid #ddd", padding: "8px" }}>Explicación</th>
+              <th>Valor</th>
+              <th>Traducción / Significado</th>
+              <th>Explicación</th>
             </tr>
           </thead>
           <tbody>
@@ -64,10 +57,10 @@ export default function App() {
               { valor: "Month", traduccion: "Mes", explicacion: "Mes en que ocurrió el sismo." },
               { valor: "tsunami", traduccion: "Tsunami", explicacion: "Indica si el sismo generó o podría generar un tsunami. Suele ser 0 (no) o 1 (sí)." }
             ].map((item) => (
-              <tr key={item.valor} style={{ borderBottom: "1px solid #ddd" }}>
-                <td style={{ border: "1px solid #ddd", padding: "8px", fontWeight: "bold" }}>{item.valor}</td>
-                <td style={{ border: "1px solid #ddd", padding: "8px" }}>{item.traduccion}</td>
-                <td style={{ border: "1px solid #ddd", padding: "8px" }}>{item.explicacion}</td>
+              <tr key={item.valor}>
+                <td>{item.valor}</td>
+                <td>{item.traduccion}</td>
+                <td>{item.explicacion}</td>
               </tr>
             ))}
           </tbody>
@@ -75,11 +68,17 @@ export default function App() {
       </section>
 
       {/* Botones para mostrar componentes */}
-      <section style={{ marginBottom: "20px" }}>
-        <h2 style={{ color: "#5cb85c" }}>🔹 Ver Componentes</h2>
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+      <section className="buttons-section">
+        <h2 className="buttons-title">🔹 Ver Componentes</h2>
+        <div className="buttons-container">
           {["CsvChart", "FirstComponent", "FourComponent", "SecondComponent", "ThreeComponent"].map((comp) => (
-            <button key={comp} onClick={() => setVisibleComponent(comp)}>{comp}</button>
+            <button 
+              key={comp} 
+              className="nav-button"
+              onClick={() => setVisibleComponent(comp)}
+            >
+              {comp}
+            </button>
           ))}
         </div>
       </section>

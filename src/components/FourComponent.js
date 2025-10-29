@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import Papa from "papaparse";
+import { Line } from "react-chartjs-2";
+import { Chart as ChartJS } from "chart.js/auto";
+import "../App.css";
 
-export const FourComponent = () => {
+export const FourComponent = ({ className }) => {
   const [data, setData] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [years, setYears] = useState([]);
@@ -14,18 +18,17 @@ export const FourComponent = () => {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [message, setMessage] = useState("");
 
-  // Cargar datos desde backend
   const loadData = async () => {
     try {
       const res = await fetch("http://localhost:3001/events");
       const csvData = await res.json();
       setData(csvData);
 
-      const yearList = [...new Set(csvData.map((d) => d.Year))].sort((a, b) => a - b);
+      const yearList = [...new Set(csvData.map(d => d.Year))].sort((a,b)=>a-b);
       setYears(yearList);
 
       const lastYear = yearList[yearList.length - 1];
-      const lastMonth = Math.max(...csvData.filter((d) => d.Year === lastYear).map((d) => d.Month));
+      const lastMonth = Math.max(...csvData.filter(d => d.Year === lastYear).map(d => d.Month));
 
       setSelectedYear(lastYear);
       setSelectedMonth(lastMonth);
@@ -38,19 +41,18 @@ export const FourComponent = () => {
 
   useEffect(() => {
     let filteredData = [...data];
-    if (selectedYear) filteredData = filteredData.filter((d) => d.Year === Number(selectedYear));
-    if (selectedMonth) filteredData = filteredData.filter((d) => d.Month === Number(selectedMonth));
+    if (selectedYear) filteredData = filteredData.filter(d => d.Year === Number(selectedYear));
+    if (selectedMonth) filteredData = filteredData.filter(d => d.Month === Number(selectedMonth));
     setFiltered(filteredData);
   }, [data, selectedYear, selectedMonth]);
 
-  // Eliminar registro persistente
   const handleDelete = async (index) => {
     if (!window.confirm("¿Seguro que deseas eliminar este registro?")) return;
     try {
       const res = await fetch(`http://localhost:3001/events/${index}`, { method: "DELETE" });
       if (res.ok) {
         setMessage("🗑️ Evento eliminado correctamente.");
-        loadData(); // recargar
+        loadData();
       } else {
         setMessage("❌ Error al eliminar registro.");
       }
@@ -60,54 +62,64 @@ export const FourComponent = () => {
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "1200px", margin: "2rem auto", background: "#1e1f26", borderRadius: "15px", color: "#fff" }}>
-      <h2 style={{ textAlign: "center", color: "#4dd0e1" }}>🌎 Registro de Terremotos</h2>
+    <div className={`component-container fade-slide ${className}`}>
+      <h2 className="component-title">🌎 Registro de Terremotos</h2>
 
-      {/* FILTROS */}
-      <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
-        <div>
-          <label>Año: </label>
-          <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
-            {years.map((y) => <option key={y} value={y}>{y}</option>)}
+      <div className="filters-container">
+        <div className="filter-group">
+          <label className="filter-label">Año: </label>
+          <select value={selectedYear} onChange={e => setSelectedYear(e.target.value)} className="filter-select">
+            {years.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
         </div>
-
-        <div>
-          <label>Mes: </label>
-          <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
-            {months.map((m) => <option key={m.value} value={m.value}>{m.name}</option>)}
+        <div className="filter-group">
+          <label className="filter-label">Mes: </label>
+          <select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} className="filter-select">
+            {months.map(m => <option key={m.value} value={m.value}>{m.name}</option>)}
           </select>
         </div>
       </div>
 
-      {message && <p style={{ textAlign: "center", color: "#4dd0e1" }}>{message}</p>}
+      {message && <p className="status-message status-info">{message}</p>}
 
-      {/* TABLA */}
-      {filtered.length === 0 ? <p style={{ textAlign: "center", color: "#bbb" }}>No hay datos para los filtros seleccionados.</p> :
-        <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "center" }}>
-          <thead style={{ backgroundColor: "#333", color: "#fff" }}>
-            <tr>
-              <th>#</th><th>Magnitud</th><th>Profundidad</th><th>Latitud</th><th>Longitud</th>
-              <th>Año</th><th>Mes</th><th>Tsunami</th><th>Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((row, i) => (
-              <tr key={i}>
-                <td>{i+1}</td>
-                <td>{row.magnitude}</td>
-                <td>{row.depth}</td>
-                <td>{row.latitude}</td>
-                <td>{row.longitude}</td>
-                <td>{row.Year}</td>
-                <td>{row.Month}</td>
-                <td>{row.tsunami}</td>
-                <td><button onClick={() => handleDelete(i)}>Eliminar</button></td>
+      {filtered.length === 0 ? (
+        <p className="empty-state">No hay datos para los filtros seleccionados.</p>
+      ) : (
+        <div className="table-container">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Magnitud</th>
+                <th>Profundidad</th>
+                <th>Latitud</th>
+                <th>Longitud</th>
+                <th>Año</th>
+                <th>Mes</th>
+                <th>Tsunami</th>
+                <th>Acción</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      }
+            </thead>
+            <tbody>
+              {filtered.map((row, i) => (
+                <tr key={i}>
+                  <td>{i + 1}</td>
+                  <td>{row.magnitude}</td>
+                  <td>{row.depth}</td>
+                  <td>{row.latitude}</td>
+                  <td>{row.longitude}</td>
+                  <td>{row.Year}</td>
+                  <td>{row.Month}</td>
+                  <td>{row.tsunami}</td>
+                  <td>
+                    <button onClick={() => handleDelete(i)} className="delete-button">Eliminar</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

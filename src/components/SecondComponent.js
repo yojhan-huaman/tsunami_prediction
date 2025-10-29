@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Papa from "papaparse";
+import { Line } from "react-chartjs-2";
+import { Chart as ChartJS } from "chart.js/auto";
+import "../App.css";
 
-export const SecondComponent = () => {
+export const SecondComponent = ({ className }) => {
   const [data, setData] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [years, setYears] = useState([]);
@@ -24,7 +27,6 @@ export const SecondComponent = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({});
 
-  // 🔹 Cargar CSV y establecer último mes/año
   useEffect(() => {
     Papa.parse("/earthquake_data_tsunami.csv", {
       download: true,
@@ -48,7 +50,6 @@ export const SecondComponent = () => {
     });
   }, []);
 
-  // 🔹 Filtrar datos y calcular estadísticas
   useEffect(() => {
     if (!data.length) return;
     let filteredData = [...data];
@@ -73,39 +74,16 @@ export const SecondComponent = () => {
   }, [data, selectedYear, selectedMonth]);
 
   return (
-    <div
-      style={{
-        padding: "2rem",
-        maxWidth: "1400px",
-        margin: "2rem auto",
-        background: "linear-gradient(135deg, #1e1f26, #2a2d3e)",
-        borderRadius: "15px",
-        color: "#fff",
-        fontFamily: "'Poppins', sans-serif",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-      }}
-    >
-      <h2 style={{ textAlign: "center", color: "#4dd0e1", marginBottom: "1.5rem" }}>
-        🌎 Lista de Terremotos (CSV)
-      </h2>
+    <div className={`component-wrapper dark-gradient-wrapper ${className}`}>
+      <h2 className="component-title">🌎 Lista de Terremotos (CSV)</h2>
 
-      {/* FILTROS */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "1rem",
-          flexWrap: "wrap",
-          marginBottom: "1.5rem",
-        }}
-      >
-        <div>
-          <label>Año: </label>
+      <div className="filters-container">
+        <div className="filter-group">
+          <label className="filter-label">Año: </label>
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(e.target.value)}
-            style={{ padding: "0.4rem 0.6rem", borderRadius: "5px", border: "none", outline: "none" }}
+            className="filter-select"
           >
             {years.map((y) => (
               <option key={y} value={y}>
@@ -115,12 +93,12 @@ export const SecondComponent = () => {
           </select>
         </div>
 
-        <div>
-          <label>Mes: </label>
+        <div className="filter-group">
+          <label className="filter-label">Mes: </label>
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            style={{ padding: "0.4rem 0.6rem", borderRadius: "5px", border: "none", outline: "none" }}
+            className="filter-select"
           >
             {months.map((m) => (
               <option key={m.value} value={m.value}>
@@ -131,39 +109,37 @@ export const SecondComponent = () => {
         </div>
       </div>
 
-      {/* RESUMEN ESTADÍSTICO */}
       {filtered.length > 0 && (
-        <div style={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
-          <div style={{ background: "rgba(255,255,255,0.05)", padding: "1rem 1.5rem", borderRadius: "10px", textAlign: "center", flex: "1 1 200px" }}>
-            <h3 style={{ color: "#4dd0e1" }}>Promedio Magnitud</h3>
-            <p style={{ fontSize: "1.6rem", fontWeight: "bold" }}>{stats.avgMagnitude}</p>
+        <div className="stats-container">
+          <div className="stat-card">
+            <h3 className="stat-title">Promedio Magnitud</h3>
+            <p className="stat-value">{stats.avgMagnitude}</p>
           </div>
-          <div style={{ background: "rgba(255,255,255,0.05)", padding: "1rem 1.5rem", borderRadius: "10px", textAlign: "center", flex: "1 1 200px" }}>
-            <h3 style={{ color: "#4dd0e1" }}>Promedio Profundidad</h3>
-            <p style={{ fontSize: "1.6rem", fontWeight: "bold" }}>{stats.avgDepth} km</p>
+          <div className="stat-card">
+            <h3 className="stat-title">Promedio Profundidad</h3>
+            <p className="stat-value">{stats.avgDepth} km</p>
           </div>
-          <div style={{ background: "rgba(255,255,255,0.05)", padding: "1rem 1.5rem", borderRadius: "10px", textAlign: "center", flex: "1 1 200px" }}>
-            <h3 style={{ color: "#4dd0e1" }}>Eventos Totales</h3>
-            <p style={{ fontSize: "1.6rem", fontWeight: "bold" }}>{stats.total}</p>
+          <div className="stat-card">
+            <h3 className="stat-title">Eventos Totales</h3>
+            <p className="stat-value">{stats.total}</p>
           </div>
-          <div style={{ background: "rgba(255,255,255,0.05)", padding: "1rem 1.5rem", borderRadius: "10px", textAlign: "center", flex: "1 1 200px" }}>
-            <h3 style={{ color: "#4dd0e1" }}>% Tsunamis</h3>
-            <p style={{ fontSize: "1.6rem", fontWeight: "bold" }}>{stats.tsunamiPercent}%</p>
+          <div className="stat-card">
+            <h3 className="stat-title">% Tsunamis</h3>
+            <p className="stat-value">{stats.tsunamiPercent}%</p>
           </div>
         </div>
       )}
 
-      {/* TABLA */}
       {loading ? (
-        <p style={{ textAlign: "center" }}>Cargando datos...</p>
+        <p className="loading-state">Cargando datos...</p>
       ) : filtered.length === 0 ? (
-        <p style={{ textAlign: "center", color: "#bbb" }}>
+        <p className="empty-state">
           No hay registros para {months[selectedMonth - 1]?.name} {selectedYear}.
         </p>
       ) : (
-        <div style={{ overflowX: "auto", maxHeight: "600px" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", backgroundColor: "rgba(255,255,255,0.05)", textAlign: "center" }}>
-            <thead style={{ backgroundColor: "rgba(0,0,0,0.4)", color: "#aee1f9", position: "sticky", top: 0 }}>
+        <div className="table-container">
+          <table className="data-table">
+            <thead>
               <tr>
                 <th>#</th>
                 <th>Magnitud</th>
@@ -177,7 +153,7 @@ export const SecondComponent = () => {
             </thead>
             <tbody>
               {filtered.map((row, i) => (
-                <tr key={i} style={{ backgroundColor: i % 2 === 0 ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.1)" }}>
+                <tr key={i}>
                   <td>{i + 1}</td>
                   <td>{row.magnitude}</td>
                   <td>{row.depth}</td>

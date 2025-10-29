@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Papa from "papaparse";
+import { Line } from "react-chartjs-2";
+import { Chart as ChartJS } from "chart.js/auto";
+import "../App.css";
 
-export const FirstComponent = ({ onEarthquakeAdded }) => {
+export const FirstComponent = ({ onEarthquakeAdded, className }) => {
   const [form, setForm] = useState({
     magnitude: "",
     cdi: "",
@@ -53,7 +57,7 @@ export const FirstComponent = ({ onEarthquakeAdded }) => {
           tsunami: "",
         });
         
-                if (onEarthquakeAdded) onEarthquakeAdded(updatedData);
+        if (onEarthquakeAdded) onEarthquakeAdded(updatedData);
       } else {
         setStatus("❌ Error al guardar en el CSV.");
       }
@@ -65,40 +69,13 @@ export const FirstComponent = ({ onEarthquakeAdded }) => {
   };
 
   return (
-    <div
-      style={{
-        background: "linear-gradient(135deg, #141E30, #243B55)",
-        padding: "2rem",
-        borderRadius: "12px",
-        color: "#fff",
-        maxWidth: "950px",
-        margin: "2rem auto",
-        boxShadow: "0 0 15px rgba(0,0,0,0.4)",
-        fontFamily: "'Poppins', sans-serif",
-      }}
-    >
-      <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-        🌎 Registrar nuevo evento sísmico
-      </h2>
+    <div className={`component-wrapper ${className}`}>
+      <h2 className="component-title">🌎 Registrar nuevo evento sísmico</h2>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: "1rem",
-        }}
-      >
+      <form onSubmit={handleSubmit} className="form-grid">
         {Object.keys(form).map((key) => (
-          <div key={key}>
-            <label
-              htmlFor={key}
-              style={{
-                fontWeight: "bold",
-                color: "#aee1f9",
-                fontSize: "0.9rem",
-              }}
-            >
+          <div key={key} className="form-field">
+            <label htmlFor={key} className="form-label">
               {key}
             </label>
             <input
@@ -110,68 +87,29 @@ export const FirstComponent = ({ onEarthquakeAdded }) => {
               placeholder={`Ingrese ${key}`}
               step="any"
               required
-              style={{
-                width: "100%",
-                padding: "0.5rem",
-                borderRadius: "8px",
-                border: "none",
-                backgroundColor: "#1B2838",
-                color: "#aee1f9",
-                outline: "none",
-              }}
+              className="form-input"
             />
           </div>
         ))}
 
-        <button
-          type="submit"
-          style={{
-            gridColumn: "1 / -1",
-            marginTop: "1rem",
-            background: "#00C9A7",
-            color: "#fff",
-            padding: "0.8rem",
-            border: "none",
-            borderRadius: "8px",
-            fontWeight: "bold",
-            fontSize: "1rem",
-            cursor: "pointer",
-            transition: "0.2s",
-          }}
-          onMouseEnter={(e) => (e.target.style.background = "#1DE9B6")}
-          onMouseLeave={(e) => (e.target.style.background = "#00C9A7")}
-        >
+        <button type="submit" className="submit-button">
           Guardar Evento
         </button>
       </form>
 
       {status && (
-        <p
-          style={{
-            textAlign: "center",
-            marginTop: "1rem",
-            color: status.includes("✅")
-              ? "#7CFC00"
-              : status.includes("❌")
-              ? "#ff6b6b"
-              : "#FFD700",
-          }}
-        >
+        <p className={`status-message ${
+          status.includes("✅") ? "status-success" :
+          status.includes("❌") ? "status-error" : "status-warning"
+        }`}>
           {status}
         </p>
       )}
 
       {preview && (
-        <div
-          style={{
-            marginTop: "2rem",
-            backgroundColor: "rgba(255,255,255,0.1)",
-            padding: "1rem",
-            borderRadius: "8px",
-          }}
-        >
-          <h3 style={{ color: "#aee1f9" }}>📋 Registro añadido:</h3>
-          <pre style={{ color: "#fff" }}>{JSON.stringify(preview, null, 2)}</pre>
+        <div className="preview-container">
+          <h3 className="preview-title">📋 Registro añadido:</h3>
+          <pre className="preview-content">{JSON.stringify(preview, null, 2)}</pre>
         </div>
       )}
     </div>
