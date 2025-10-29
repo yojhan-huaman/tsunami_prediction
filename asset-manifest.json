@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/tsunami_prediction/static/css/main.575367f6.css",
+    "main.js": "/tsunami_prediction/static/js/main.e5cfa9a5.js",
+    "static/js/453.2c9909aa.chunk.js": "/tsunami_prediction/static/js/453.2c9909aa.chunk.js",
+    "index.html": "/tsunami_prediction/index.html",
+    "main.575367f6.css.map": "/tsunami_prediction/static/css/main.575367f6.css.map",
+    "main.e5cfa9a5.js.map": "/tsunami_prediction/static/js/main.e5cfa9a5.js.map",
+    "453.2c9909aa.chunk.js.map": "/tsunami_prediction/static/js/453.2c9909aa.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.575367f6.css",
+    "static/js/main.e5cfa9a5.js"
+  ]
+}
