@@ -1,0 +1,9 @@
+{
+  "name": "tsunami-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "papaparse": "^5.5.3"
+  }
+}

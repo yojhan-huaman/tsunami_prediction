@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-import Papa from "papaparse";
-import { Line } from "react-chartjs-2";
-import { Chart as ChartJS } from "chart.js/auto";
+import React, { useState } from "react";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig"; // Importa la conexión
 import "../App.css";
 
 export const FirstComponent = ({ onEarthquakeAdded, className }) => {
@@ -24,47 +23,42 @@ export const FirstComponent = ({ onEarthquakeAdded, className }) => {
   const [status, setStatus] = useState("");
   const [preview, setPreview] = useState(null);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus("Guardando en CSV...");
+    setStatus("Guardando en Firebase...");
 
     try {
-      const response = await fetch("https://mi-backend-publico/api/earthquakes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+      // Guarda el registro en la colección "earthquakes"
+      await addDoc(collection(db, "earthquakes"), {
+        ...form,
+        timestamp: new Date(),
+      });
 
+      setStatus("✅ Evento agregado correctamente a Firebase.");
+      setPreview(form);
+      setForm({
+        magnitude: "",
+        cdi: "",
+        mmi: "",
+        sig: "",
+        nst: "",
+        dmin: "",
+        gap: "",
+        depth: "",
+        latitude: "",
+        longitude: "",
+        Year: "",
+        Month: "",
+        tsunami: "",
+      });
 
-      if (response.ok) {
-        const updatedData = await response.json();
-        setStatus("✅ Evento agregado correctamente al CSV.");
-        setPreview(form);
-        setForm({
-          magnitude: "",
-          cdi: "",
-          mmi: "",
-          sig: "",
-          nst: "",
-          dmin: "",
-          gap: "",
-          depth: "",
-          latitude: "",
-          longitude: "",
-          Year: "",
-          Month: "",
-          tsunami: "",
-        });
-        
-        if (onEarthquakeAdded) onEarthquakeAdded(updatedData);
-      } else {
-        setStatus("❌ Error al guardar en el CSV.");
-      }
+      if (onEarthquakeAdded) onEarthquakeAdded(form);
     } catch (error) {
       console.error(error);
-      setStatus("⚠️ No se pudo conectar con el servidor.");
+      setStatus("❌ Error al guardar en Firebase.");
       setPreview(form);
     }
   };
@@ -99,10 +93,15 @@ export const FirstComponent = ({ onEarthquakeAdded, className }) => {
       </form>
 
       {status && (
-        <p className={`status-message ${
-          status.includes("✅") ? "status-success" :
-          status.includes("❌") ? "status-error" : "status-warning"
-        }`}>
+        <p
+          className={`status-message ${
+            status.includes("✅")
+              ? "status-success"
+              : status.includes("❌")
+              ? "status-error"
+              : "status-warning"
+          }`}
+        >
           {status}
         </p>
       )}
@@ -110,7 +109,9 @@ export const FirstComponent = ({ onEarthquakeAdded, className }) => {
       {preview && (
         <div className="preview-container">
           <h3 className="preview-title">📋 Registro añadido:</h3>
-          <pre className="preview-content">{JSON.stringify(preview, null, 2)}</pre>
+          <pre className="preview-content">
+            {JSON.stringify(preview, null, 2)}
+          </pre>
         </div>
       )}
     </div>
